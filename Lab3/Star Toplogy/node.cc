@@ -26,6 +26,6 @@ void Node::initialize()
 void Node::handleMessage(cMessage *msg)
 {
     // TODO - Generated method body
-    cMessage* respondToHub=new cMessage("Hello from Node");
+    cMessage* respondToHub=new cMessage("Hi from Node");
     send(respondToHub,"port$o",0);
 }
