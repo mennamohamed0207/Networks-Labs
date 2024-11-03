@@ -39,26 +39,52 @@ void Sender::handleMessage(cMessage *msg)
 
     EV<<"Message "<<input<<" Before Modification :"<<endl;
     std::bitset<8>charCount(input.size());
-    EV<<charCount<<endl;
     newMessage->setM_Header((char)charCount.to_ulong());
     newMessage->setM_Type(0);
     int size=0;
     std::bitset<8>parity(0);
     parity=parity^charCount;
     newMessage->setM_PayloadArraySize(input.size()+1);
+    int mayError=uniform(0,2);
+    int CorruptedByte=uniform(1,input.size()+1);
+    int corruptedBit=uniform(0,8);
+    if(mayError==1)
+    {
 
+
+                std::cout<<"There is error at byte number "<<CorruptedByte<<endl;
+                EV<<"There is error at byte number "<<CorruptedByte<<endl;
+                EV<<"There is error at bit "<<corruptedBit<<endl;
+                EV<<charCount<<endl;
+
+    }else{
+        EV<<"There is no error generated "<<endl;
+        EV<<charCount<<endl;
+
+    }
     for (int i=0;i<input.size();i++)
     {
         size++;
         std::bitset<8>character(input[i]);
+        if(mayError==1&&CorruptedByte==i+1)
+        {
+
+            character[corruptedBit]=character[corruptedBit] ^1;
+
+
+        }
         EV<<character<<endl;
         newMessage->setM_Payload(size,input[i]);
         parity=parity^character;
 
     }
+
     EV<<parity<<endl;
     newMessage->setM_Trailer((char)parity.to_ulong());
     send(newMessage,"sender_out");
+    scheduleAt(simTime(),new cMessage(""));
+
+
 
 
 }
