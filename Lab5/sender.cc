@@ -35,9 +35,12 @@ void Sender::handleMessage(cMessage *msg)
 
         std::cin>>input;
         std::cout<<"You Entered : "<<input<<endl;
+        if (input =="end") {
+            EV<<"Ending Simulation"<<endl;
+            endSimulation();}
 
 
-    EV<<"Message "<<input<<" Before Modification :"<<endl;
+    EV<<" Before Modification Message is: "<<input<<endl;
     std::bitset<8>charCount(input.size());
     newMessage->setM_Header((char)charCount.to_ulong());
     newMessage->setM_Type(0);
@@ -66,6 +69,7 @@ void Sender::handleMessage(cMessage *msg)
     {
         size++;
         std::bitset<8>character(input[i]);
+        parity=parity^character;
         if(mayError==1&&CorruptedByte==i+1)
         {
 
@@ -74,15 +78,27 @@ void Sender::handleMessage(cMessage *msg)
 
         }
         EV<<character<<endl;
-        newMessage->setM_Payload(size,input[i]);
-        parity=parity^character;
+        newMessage->setM_Payload(size,(char)(character.to_ullong()));
+
 
     }
 
     EV<<parity<<endl;
+    std::string payload="";
+        for(int i=0;i<input.size();i++)
+        {
+            payload+=newMessage->getM_Payload(i+1);
+        }
     newMessage->setM_Trailer((char)parity.to_ulong());
     send(newMessage,"sender_out");
-    scheduleAt(simTime(),new cMessage(""));
+
+    EV<<"The message parameters "<<endl;
+    EV<<"Header of Message is "<<newMessage->getM_Header()<<endl;
+    EV<<"Payload is "<<payload<<endl;
+    EV<<"Type of Message is "<<newMessage->getM_Type()<<endl;
+    EV<<"Tailer of Message is "<<newMessage->getM_Trailer()<<endl;
+
+//    scheduleAt(simTime(),new cMessage(""));
 
 
 

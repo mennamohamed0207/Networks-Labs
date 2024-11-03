@@ -17,6 +17,8 @@
 #define __LAB5_RECEIVER_H_
 
 #include <omnetpp.h>
+#include <bitset>
+#include "MyMessage_m.h"
 
 using namespace omnetpp;
 
