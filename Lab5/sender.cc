@@ -24,7 +24,7 @@ void Sender::initialize()
     scheduleAt(simTime(),new cMessage(""));
 
 }
-
+bool distribute=true;
 void Sender::handleMessage(cMessage *msg)
 {
     // TODO - Generated method body
@@ -48,10 +48,9 @@ void Sender::handleMessage(cMessage *msg)
     std::bitset<8>parity(0);
     parity=parity^charCount;
     newMessage->setM_PayloadArraySize(input.size()+1);
-    int mayError=uniform(0,2);
     int CorruptedByte=uniform(1,input.size()+1);
     int corruptedBit=uniform(0,8);
-    if(mayError==1)
+    if(!distribute)
     {
 
 
@@ -70,12 +69,9 @@ void Sender::handleMessage(cMessage *msg)
         size++;
         std::bitset<8>character(input[i]);
         parity=parity^character;
-        if(mayError==1&&CorruptedByte==i+1)
+        if(!distribute&&CorruptedByte==i+1)
         {
-
             character[corruptedBit]=character[corruptedBit] ^1;
-
-
         }
         EV<<character<<endl;
         newMessage->setM_Payload(size,(char)(character.to_ullong()));
@@ -91,7 +87,7 @@ void Sender::handleMessage(cMessage *msg)
         }
     newMessage->setM_Trailer((char)parity.to_ulong());
     send(newMessage,"sender_out");
-
+    distribute=!distribute;
     EV<<"The message parameters "<<endl;
     EV<<"Header of Message is "<<newMessage->getM_Header()<<endl;
     EV<<"Payload is "<<payload<<endl;

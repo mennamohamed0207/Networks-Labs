@@ -27,7 +27,7 @@ void Sender::initialize()
 }
 
 
-
+bool distru=true;
 void Sender::handleMessage(cMessage *msg)
 {
     // TODO - Generated method body
@@ -44,7 +44,6 @@ void Sender::handleMessage(cMessage *msg)
     std::vector<std::bitset<8> > vec;
     vec.push_back(charCount);
 
-    int mayError=uniform(0,2);
 
     std::bitset<8>parity(0);
     parity=parity^charCount;
@@ -63,7 +62,7 @@ void Sender::handleMessage(cMessage *msg)
           std::cout<<vec[i]<<endl;
           EV<<vec[i]<<endl;
       }
-    if (mayError==1)
+    if (!distru)
     {
         int CorruptedByte=uniform(1,strSize+1);
 
@@ -84,6 +83,15 @@ void Sender::handleMessage(cMessage *msg)
 
 
         }
+        EV<<"Message "<<finalString<<" After modification: "<<endl;
+            std::cout<<"Message "<<finalString<<" After modification: "<<endl;
+
+            for(int i=0;i<strSize+2;i++)
+              {
+                  std::cout<<vec[i]<<endl;
+                  EV<<vec[i]<<endl;
+              }
+
     }else {
         EV<<"There is no error "<<endl;
     }
@@ -92,6 +100,7 @@ void Sender::handleMessage(cMessage *msg)
    {
        transmitedMsg+=(char)vec[i].to_ulong();
    }
+   distru=!distru;
    char* sentMsg=new char[transmitedMsg.length()+1];
    strcpy(sentMsg, transmitedMsg.c_str());
    cMessage* msg2=new cMessage(sentMsg);
